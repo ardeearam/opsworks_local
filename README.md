@@ -10,8 +10,10 @@ $ ruby opsworks_local.rb -c deploy
 $ ruby opsworks_local.rb -c deploy -i i-7f9811b1
 
 # Run custom recipe to current instance
-$ ruby opsworks_lcoal.rb -r mycookbook::jump_high
+$ ruby opsworks_local.rb -r mycookbook::jump_high
 
+# Update custom cookbook
+$ ruby opsworks_local.rb -c update_custom_cookbooks
 ```
 
 # Prerequisites
