@@ -39,6 +39,7 @@ option_parser = OptionParser.new do |opts|
   
   opts.on("-a", "--all-instances", "Apply command for all instances on the stack of this instance. This overrides the -i switch.") do
     options[:all_instances] = true
+    options[:instance_ids] = nil
   end
   
   opts.on("-h", "--help", "Show this message.") do
