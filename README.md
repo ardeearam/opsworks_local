@@ -9,6 +9,9 @@ $ ruby opsworks_local.rb -c deploy
 # Invoke deploy on another server instance
 $ ruby opsworks_local.rb -c deploy -i i-7f9811b1
 
+# Invoke deploy on multiple server instances
+$ ruby opsworks_local.rb -c deploy -i i-1a2abcd4,i-0b2cbac5
+
 # Run custom recipe to current instance
 $ ruby opsworks_local.rb -r mycookbook::jump_high
 
