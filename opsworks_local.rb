@@ -61,12 +61,13 @@ stacks[:Stacks].each do |stack|
   stack_id = stack[:StackId]
   instances = aws_json(`#{credentials} #{aws_opsworks} describe-instances --stack-id #{stack_id}`)
 
+  #Get stacks where the particular EC2 instance belong.
   instances[:Instances].each do |instance|
         next if !ec2_instance_ids.include?(instance[:Ec2InstanceId])
         opsworks_ids << {stack_id: stack_id, opsworks_instance_id: instance[:InstanceId]}
   end
 
-  #Get App ID's only on deployment
+  #Get App ID's of the said stacks (only on deployment)
   if options[:command].to_sym == :deploy
     apps = aws_json(`#{credentials} #{aws_opsworks} describe-apps --stack-id #{stack_id}`)  
   apps[:Apps].each do |app|
@@ -92,29 +93,32 @@ end
         app_id = ""
    end
 
-   #instance_ids
-   instance_ids = ""
-   instance_ids = "--instance-ids #{opsworks_ids.map{|x| x[:opsworks_instance_id]}.join(' ')}" if opsworks_ids.count > 0   
+ 
 
-   #execution time
-   opsworks_ids.each do |opswork|
+   #execution time!
+   #For each stack...
+   opsworks_ids.map{|x| x[:stack_id]}.each do |stack_id|
 
+    #... get the instance_ids associated with this stack...
+    instance_ids = ""
+    if opsworks_ids.count > 0 
+      instance_ids = "--instance-ids #{opsworks_ids.select{|x| x[:stack_id] == stack_id}.map{|x| x[:opsworks_instance_id]}.join(' ')}" 
+    end
+    
     create_deployment = lambda do |args, app_id|  
-
-      puts (`#{credentials} #{aws_opsworks} create-deployment --stack-id #{opswork[:stack_id]} #{instance_ids} --command "{\\"Name\\":\\"#{options[:command]}\\" #{args}}" #{app_id}`)
+      puts (`#{credentials} #{aws_opsworks} create-deployment --stack-id #{stack_id} #{instance_ids} --command "{\\"Name\\":\\"#{options[:command]}\\" #{args}}" #{app_id}`)
     end
 
     case options[:command].to_sym
     when :deploy
-  #Deploy all apps present in stacks where the instance is registered.
-  app_ids.select{|x| x[:stack_id] == opswork[:stack_id]}.each do |app|
-    puts app
-    create_deployment.call(args, "--app-id #{app[:app_id]}")
+        #Deploy all apps present in stacks where the instance is registered.
+        app_ids.select{|x| x[:stack_id] == stack_id}.each do |app|
+          puts app
+          create_deployment.call(args, "--app-id #{app[:app_id]}")
         end 
     else
-  create_deployment.call(args, app_id)  
+        create_deployment.call(args, app_id)  
     end
-
    end
 
 rescue StandardError => ex
