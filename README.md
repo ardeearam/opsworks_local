@@ -20,6 +20,9 @@ $ ruby opsworks_local.rb -r mycookbook::jump_high
 
 # Update custom cookbook
 $ ruby opsworks_local.rb -c update_custom_cookbooks
+
+# Update custom cookbook on all servers for this stack
+$ ruby opsworks_local.rb -c update_custom_cookbooks -a
 ```
 
 # Prerequisites
