@@ -1,6 +1,8 @@
 # opsworks_local
 Run OpsWorks recipes via command line on EC2 instances. By default, the recipe targets the EC2 instance where the command was run, but this can be changed.
 
+This may also be invoked from the local development machine, provided that instance id's are explicitly set using the -i flag.
+
 # Usage
 ```
 # Deploy all applications to current instance
