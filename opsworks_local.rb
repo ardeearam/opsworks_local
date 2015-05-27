@@ -97,7 +97,7 @@ end
 
    #execution time!
    #For each stack...
-   opsworks_ids.map{|x| x[:stack_id]}.each do |stack_id|
+   opsworks_ids.map{|x| x[:stack_id]}.uniq.each do |stack_id|
 
     #... get the instance_ids associated with this stack...
     instance_ids = ""
