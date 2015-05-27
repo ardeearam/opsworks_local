@@ -32,12 +32,18 @@ option_parser = OptionParser.new do |opts|
     options[:command] = :execute_recipes
     options[:recipes] = recipes 
   end 
+  
   opts.on("-i", "--instance-ids INSTANCEID1,...",Array, "If given, the EC2 instance ids where the command will be run (comma separeted, without spaces). Defaults to the current server where this script is executed.") do |instance_ids|
     options[:instance_ids] = instance_ids
   end
-        opts.on("-h", "--help", "Show this message.") do
+  
+  opts.on("-a", "--all-instances", "Apply command for all instances on the stack of this instance. This overrides the -i switch.") do
+    options[:all_instances] = true
+  end
+  
+  opts.on("-h", "--help", "Show this message.") do
     options[:help] = true
-          puts opts
+    puts opts
   end
 end
 
@@ -101,7 +107,7 @@ end
 
     #... get the instance_ids associated with this stack...
     instance_ids = ""
-    if opsworks_ids.count > 0 
+    if !options[:all_instances] && opsworks_ids.count > 0 
       instance_ids = "--instance-ids #{opsworks_ids.select{|x| x[:stack_id] == stack_id}.map{|x| x[:opsworks_instance_id]}.join(' ')}" 
     end
     
