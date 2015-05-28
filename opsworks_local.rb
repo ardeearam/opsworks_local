@@ -7,7 +7,6 @@
 require 'json'
 require 'optparse'
 
-credentials ||=""
 
 
 options = {}
@@ -51,6 +50,7 @@ end
 begin
    option_parser.parse!
 
+  
    raise "" if options.empty? 
 
 aws_opsworks = "aws opsworks --region us-east-1"
@@ -61,12 +61,12 @@ def aws_json(json)
   JSON.parse(json,{:symbolize_names => true})
 end
 
-stacks = aws_json(`#{credentials} #{aws_opsworks} describe-stacks`)
+stacks = aws_json(`#{aws_opsworks} describe-stacks`)
 opsworks_ids = []
 app_ids = []
 stacks[:Stacks].each do |stack|
   stack_id = stack[:StackId]
-  instances = aws_json(`#{credentials} #{aws_opsworks} describe-instances --stack-id #{stack_id}`)
+  instances = aws_json(`#{aws_opsworks} describe-instances --stack-id #{stack_id}`)
 
   #Get stacks where the particular EC2 instance belong.
   instances[:Instances].each do |instance|
@@ -76,7 +76,7 @@ stacks[:Stacks].each do |stack|
 
   #Get App ID's of the said stacks (only on deployment)
   if options[:command].to_sym == :deploy
-    apps = aws_json(`#{credentials} #{aws_opsworks} describe-apps --stack-id #{stack_id}`)  
+    apps = aws_json(`#{aws_opsworks} describe-apps --stack-id #{stack_id}`)  
   apps[:Apps].each do |app|
     app_ids << {stack_id: stack_id, app_id: app[:AppId], name: app[:Name]}
   end
@@ -113,7 +113,7 @@ end
     end
     
     create_deployment = lambda do |args, app_id|  
-      puts (`#{credentials} #{aws_opsworks} create-deployment --stack-id #{stack_id} #{instance_ids} --command "{\\"Name\\":\\"#{options[:command]}\\" #{args}}" #{app_id}`)
+      puts (`#{aws_opsworks} create-deployment --stack-id #{stack_id} #{instance_ids} --command "{\\"Name\\":\\"#{options[:command]}\\" #{args}}" #{app_id}`)
     end
 
     case options[:command].to_sym
