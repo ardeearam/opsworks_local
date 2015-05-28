@@ -1,30 +1,45 @@
 # opsworks_local
-Run OpsWorks recipes via command line on EC2 instances. By default, the recipe targets the EC2 instance where the command was run, but this can be changed.
+Run OpsWorks recipes via command line. By default, the recipe targets the EC2 instance where the command was run, but this can be changed.
 
-This may also be invoked from the local development machine, provided that instance id's are explicitly set using the -i flag.
+
 
 # Usage
-```
-# Deploy all applications to current instance
-$ ruby opsworks_local.rb -c deploy
+## Non-EC2 machines (e.g. local development) 
+For Non-EC2 machines, either the instance ids or the stack must be explicitly state.
 
-# Invoke deploy on another server instance
+```
+# Invoke deploy on one instance
 $ ruby opsworks_local.rb -c deploy -i i-7f9811b1
 
 # Invoke deploy on multiple server instances
 $ ruby opsworks_local.rb -c deploy -i i-1a2abcd4,i-0b2cbac5
 
-# Invoke deploy on all servers for this stack
-$ ruby opsworks_local.rb -c deploy -a
-
 # Run custom recipe to current instance
-$ ruby opsworks_local.rb -r mycookbook::jump_high
+$ ruby opsworks_local.rb -r mycookbook::jump_high -i i-7f9811b1
 
 # Update custom cookbook
-$ ruby opsworks_local.rb -c update_custom_cookbooks
+$ ruby opsworks_local.rb -c update_custom_cookbooks -i i-7f9811b1
 
-# Update custom cookbook on all servers for this stack
+# Update custom cookbook for all instances in the stack `my_stack`
+$ ruby opsworks_local.rb -c update_custom_cookbooks -s my_stack
+```
+
+##EC2 machines
+`opsworks_local` can introspect, and dynamically obtain OpsWorks infromation regarding the current EC2 instance.
+This removes the necessity of either doing lookups, or hard-coding instance ids.
+ 
+# Deploy all applications to current instance
+$ ruby opsworks_local.rb -c deploy
+
+# Invoke deploy on all servers for the stack where this instance belongs.
+$ ruby opsworks_local.rb -c deploy -a
+
+# Update custom cookbook on all servers for the stack this instance belongs.
 $ ruby opsworks_local.rb -c update_custom_cookbooks -a
+
+# Works perfectly on your `crontab`, especially with the `cron` Chef resource.
+# Chef Name: postgresql backup
+0 */6 * * * ruby /path/to/opsworks_local.rb -r mycookbook::postgresql_backup
 ```
 
 # Prerequisites
