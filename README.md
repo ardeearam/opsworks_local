@@ -27,7 +27,8 @@ $ ruby opsworks_local.rb -c update_custom_cookbooks -s my_stack
 ##EC2 machines
 `opsworks_local` can introspect, and dynamically obtain OpsWorks infromation regarding the current EC2 instance.
 This removes the necessity of either doing lookups, or hard-coding instance ids.
- 
+
+``` 
 # Deploy all applications to current instance
 $ ruby opsworks_local.rb -c deploy
 
