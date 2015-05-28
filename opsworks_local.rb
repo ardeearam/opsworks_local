@@ -148,6 +148,8 @@ class OpsworksLocal
     if options[:all_instances] === true
       options[:instance_ids] = nil
     end
+    
+    options
   end
   
 end
